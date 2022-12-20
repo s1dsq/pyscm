@@ -88,10 +88,12 @@ class Evaluate:
                 if operator.result.literal == "#t" or operator.result.literal == "#f":
                     key = operator.result.literal
                 result = self.env[key](*args)
-                if result == True:
-                    result = "#t"
-                elif result == False:
-                    result = "#f"
+                # why is 1 == True and 2 != True in python?
+                if type(result) == bool:
+                    if result == True:
+                        result = "#t"
+                    elif result == False:
+                        result = "#f"
                 return EvalResult(
                     EvalStatus.SUCCESS, self.parser.get_token(str(result))
                 )

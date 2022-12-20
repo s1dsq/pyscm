@@ -26,10 +26,13 @@ class TestSchemeInterpreter(unittest.TestCase):
         _, result = self.interpreter.interpret("(ceiling 13.92)")
         self.assertEqual(result.literal, 14)
 
-    @unittest.expectedFailure
     def test_ceiling2(self):
         _, result = self.interpreter.interpret("(ceiling (/ 2 18))")
         self.assertEqual(result.literal, 1)
+
+    def test_ceiling3(self):
+        _, result = self.interpreter.interpret("(ceiling (/ 934.2 2.45))")
+        self.assertEqual(result.literal, 382)
 
     def test_define(self):
         _, result = self.interpreter.interpret("(define x (if (< 2 4) (+ 2 (* 4 8)) (if #t 'if' 'else')))")

@@ -43,10 +43,9 @@ class TestSchemeInterpreter(unittest.TestCase):
         _, result = self.interpreter.interpret("(/ 2 18)")
         self.assertEqual(result.literal, "1/9")
 
-    @unittest.expectedFailure
     def test_division2(self):
         _, result = self.interpreter.interpret("(/ 8.8 2.2)")
-        self.assertEqual(result.literal, "4")
+        self.assertEqual(result.literal, 4)
 
     def test_equal(self):
         _, result = self.interpreter.interpret("(= (+ 2 2) (* 2 2))")
@@ -56,10 +55,13 @@ class TestSchemeInterpreter(unittest.TestCase):
         _, result = self.interpreter.interpret("(floor 13.92)")
         self.assertEqual(result.literal, 13.0)
 
-    @unittest.expectedFailure
     def test_floor2(self):
         _, result = self.interpreter.interpret("(floor (/ 2 18))")
         self.assertEqual(result.literal, 0)
+
+    def test_floor3(self):
+        _, result = self.interpreter.interpret("(floor (/ 934.2 2.45))")
+        self.assertEqual(result.literal, 381)
 
     def test_ge(self):
         _, result = self.interpreter.interpret("(>= 4 4)")
@@ -85,7 +87,6 @@ class TestSchemeInterpreter(unittest.TestCase):
         _, result = self.interpreter.interpret("(+ 1 2 3 4 5)")
         self.assertEqual(result.literal, 15)
 
-    @unittest.expectedFailure
     def test_round(self):
         _, result = self.interpreter.interpret("(round (/ 15 4))")
         self.assertEqual(result.literal, 4)

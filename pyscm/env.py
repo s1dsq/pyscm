@@ -2,7 +2,7 @@ import math
 import operator as op
 
 from .parse import TokenType
-from .procedure import ceiling, divide, reduce
+from .procedure import ceiling, divide, floor, reduce, scm_round
 
 global_env = {
     TokenType.PLUS: lambda *args: reduce(op.add, *args),
@@ -15,9 +15,9 @@ global_env = {
     TokenType.LESS_EQUAL: op.le,
     TokenType.EQUAL: op.eq,
     TokenType.SQRT: math.sqrt,
-    TokenType.FLOOR: math.floor,
+    TokenType.FLOOR: lambda n: floor(n),
     TokenType.CEIL: lambda n: ceiling(n),
-    TokenType.ROUND: round,
+    TokenType.ROUND: lambda n: scm_round(n),
     TokenType.MAX: max,
     TokenType.MIN: min,
     TokenType.ABS: abs,

@@ -26,8 +26,22 @@ def ceiling(n):
         return math.ceil(Fraction(n))
 
 
+def floor(n):
+    try:
+        return math.floor(n)
+    except TypeError:
+        return math.floor(Fraction(n))
+
+
 def divide(a, b):
     try:
         return Fraction(a, b)
     except TypeError:
         return op.truediv(a, b)
+
+
+def scm_round(n):
+    try:
+        round(n)
+    except TypeError:
+        return round(Fraction(n))

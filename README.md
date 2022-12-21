@@ -1,5 +1,7 @@
 # Scheme interpreter in python
 
+This project is a work in progress
+
 ## Introduction
 A subset of features for the
 [R5RS](https://schemers.org/Documents/Standards/R5RS)

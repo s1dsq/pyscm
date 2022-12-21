@@ -24,17 +24,20 @@ class Interpret:
         if exp.lstrip()[0] == ";":
             return SUCCESS, None
 
-        ret, parsed_or_msg = self.parser.parse(self.split_expression(exp))
-        if not ret:
-            return FAILURE, f"{parsed_or_msg}"
-        else:
-            evaluation = self.evaluator.evaluate(parsed_or_msg)
-            status = evaluation.status
-            result = evaluation.result
-            if status == EvalStatus.FAILURE:
-                return FAILURE, result
+        to_parse = self.split_expression(exp)
+        status = SUCCESS
+        result = None
+        while len(to_parse) > 0:
+            ret, parsed_or_msg = self.parser.parse(to_parse)
+            if not ret:
+                return FAILURE, f"{parsed_or_msg}"
             else:
-                return SUCCESS, result
+                evaluation = self.evaluator.evaluate(parsed_or_msg)
+                status = evaluation.status
+                result = evaluation.result
+                if status == EvalStatus.FAILURE:
+                    return FAILURE, result
+        return SUCCESS, result
 
 
 def run_repl():

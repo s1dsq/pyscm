@@ -70,10 +70,9 @@ class TestSchemeInterpreter(unittest.TestCase):
             self.assertEqual(result.literal, 382)
 
     def test_define(self):
-        _, result = self.interpreter.interpret(
-            "(define x (if (< 2 4) (+ 2 (* 4 8)) (if #t 'if' 'else')))"
+        status, result = self.interpreter.interpret(
+            "(define x (if (< 2 4) (+ 2 (* 4 8)) (if #t 'if' 'else'))) x"
         )
-        status, result = self.interpreter.interpret("x")
         self.assertEqual(status, SUCCESS)
         self.assertIsInstance(result, Token)
 
@@ -187,9 +186,9 @@ class TestSchemeInterpreter(unittest.TestCase):
             self.assertEqual(result.literal, 4)
 
     def test_set1(self):
-        _, result = self.interpreter.interpret("(define f 10)")
-        _, result = self.interpreter.interpret("(set! f (+ f f 6))")
-        status, result = self.interpreter.interpret("f")
+        status, result = self.interpreter.interpret(
+            "(define f 10) (set! f (+ f f 6)) f"
+        )
         self.assertEqual(status, SUCCESS)
         self.assertIsInstance(result, Token)
 
@@ -209,8 +208,9 @@ class TestSchemeInterpreter(unittest.TestCase):
             self.assertEqual(result.literal, 4.0)
 
     def test_begin(self):
-        _, result = self.interpreter.interpret("(define y 10)")
-        status, result = self.interpreter.interpret("(begin (set! y (+ y 5)) y)")
+        status, result = self.interpreter.interpret(
+            "(define y 10) (begin (set! y (+ y 5)) y)"
+        )
         self.assertEqual(status, SUCCESS)
         self.assertIsInstance(result, Token)
 

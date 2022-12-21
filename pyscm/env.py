@@ -21,6 +21,7 @@ global_env = {
     TokenType.MAX: max,
     TokenType.MIN: min,
     TokenType.ABS: abs,
+    TokenType.BEGIN: lambda *args: args[-1],
     "#t": True,
     "#f": False,
 }

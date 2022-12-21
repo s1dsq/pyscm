@@ -37,6 +37,8 @@ class TokenType(Enum):
     BOOLEAN = 24
     IDENT = 25
 
+    BEGIN = 26
+
 
 @dataclass
 class Token:
@@ -129,4 +131,6 @@ class Parse:
             return Token(TokenType.STRING, t)
         elif t == "#t" or t == "#f":
             return Token(TokenType.BOOLEAN, t)
+        elif t == "begin":
+            return Token(TokenType.BEGIN, t)
         return Token(TokenType.IDENT, t)

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum, unique
-from typing import Any
+from typing import Any, Optional
 
 from .parse import Parse, Token, TokenType
 
@@ -14,7 +14,7 @@ class EvalStatus(Enum):
 @dataclass
 class EvalResult:
     status: EvalStatus
-    result: Any
+    result: Optional[Any]
 
 
 @dataclass
@@ -42,7 +42,9 @@ class Evaluate:
         operator = self.evaluate(exp[0])
         if operator.status == EvalStatus.FAILURE:
             return operator
-        op_token = operator.result.token_type
+        op_token = None
+        if operator.result != None:
+            op_token = operator.result.token_type
 
         args = []
         for i, arg in enumerate(exp[1:]):
@@ -58,6 +60,8 @@ class Evaluate:
             argi = self.evaluate(arg)
             if argi.status == EvalStatus.FAILURE:
                 return argi
+            if argi.result == None:
+                continue
 
             # evaluate different branches for if statement. The dead branch is
             # never evaluated
@@ -71,21 +75,23 @@ class Evaluate:
         # set! checks if binding already exists before overwriting it
         if op_token == TokenType.SET:
             if self.env.get(args[0], None) == None:
-                return EvalResult(EvalStatus.FAILURE, f"undefined variable {args[0]}")
+                return EvalResult(EvalStatus.FAILURE, None)
 
             self.env[args[0]] = args[1]
-            return EvalResult(EvalStatus.SUCCESS, ";no values returned")
+            return EvalResult(EvalStatus.SUCCESS, None)
 
         elif op_token == TokenType.DEFINE:
             self.env[args[0]] = args[1]
-            return EvalResult(EvalStatus.SUCCESS, ";no values returned")
+            return EvalResult(EvalStatus.SUCCESS, None)
 
         # check if token exists in env. Call the procedure with the args if it
         # exists in env
         elif self.env.get(op_token, None) != None:
             try:
                 key = op_token
-                if operator.result.literal == "#t" or operator.result.literal == "#f":
+                if operator.result != None and (
+                    operator.result.literal == "#t" or operator.result.literal == "#f"
+                ):
                     key = operator.result.literal
                 result = self.env[key](*args)
                 # why is 1 == True and 2 != True in python?

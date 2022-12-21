@@ -1,10 +1,13 @@
-from .env import global_env
-from .evaluate import Evaluate, EvalStatus
-from .parse import Parse
 import sys
+from typing import Tuple, Union
+
+from .env import global_env
+from .evaluate import EvalStatus, Evaluate
+from .parse import Parse, Token
 
 SUCCESS = True
 FAILURE = False
+
 
 class Interpret:
     def __init__(self, env: dict):
@@ -15,11 +18,11 @@ class Interpret:
     def split_expression(self, exp: str):
         return exp.replace("(", " ( ").replace(")", " ) ").split()
 
-    def interpret(self, exp: str):
+    def interpret(self, exp: str) -> Tuple[bool, Union[Token, str, None]]:
         if not exp:
-            return SUCCESS, ""
+            return SUCCESS, None
         if exp.lstrip()[0] == ";":
-            return SUCCESS, ""
+            return SUCCESS, None
 
         ret, parsed_or_msg = self.parser.parse(self.split_expression(exp))
         if not ret:
@@ -41,12 +44,13 @@ def run_repl():
             exp = input("pyscm> ")
             status, result = interpreter.interpret(exp)
             if status == SUCCESS:
-                if result != "":
+                if result:
                     print(result)
             else:
                 print("error:", result)
     except (KeyboardInterrupt, EOFError):
         sys.exit(1)
+
 
 def interpret_from_file(file):
     try:
@@ -59,7 +63,7 @@ def interpret_from_file(file):
         for line in contents.split("\n"):
             status, result = interpreter.interpret(line)
             if status == SUCCESS:
-                if result != "":
+                if result:
                     print(result)
             else:
                 print("error:", result)

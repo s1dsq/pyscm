@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum, unique
+from typing import Union
 
 List = list
 
@@ -40,7 +41,7 @@ class TokenType(Enum):
 @dataclass
 class Token:
     token_type: TokenType
-    literal: str | int | float
+    literal: Union[str, int, float]
 
     def __str__(self):
         return str(self.literal)

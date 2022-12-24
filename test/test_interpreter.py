@@ -216,3 +216,65 @@ class TestSchemeInterpreter(unittest.TestCase):
 
         if isinstance(result, Token):
             self.assertEqual(result.literal, 15)
+
+    def test_define_with_expr(self):
+        status, result = self.interpreter.interpret(
+            "(define (square n) (* n n)) (define (cube n) (* n n n)) (+ (square 13) (cube 13))"
+        )
+        self.assertEqual(status, SUCCESS)
+        self.assertIsInstance(result, Token)
+
+        if isinstance(result, Token):
+            self.assertEqual(result.literal, 2366)
+
+    def test_lambda(self):
+        status, result = self.interpreter.interpret(
+            "(define x 6) (((lambda (n) (if (> n 3) * +)) 5) 5 x)"
+        )
+        self.assertEqual(status, SUCCESS)
+        self.assertIsInstance(result, Token)
+
+        if isinstance(result, Token):
+            self.assertEqual(result.literal, 30)
+
+    def test_lambda_in_define(self):
+        status, result = self.interpreter.interpret(
+            "(define square (lambda (n) (* n n))) (square 12)"
+        )
+        self.assertEqual(status, SUCCESS)
+        self.assertIsInstance(result, Token)
+
+        if isinstance(result, Token):
+            self.assertEqual(result.literal, 144)
+
+        status, result = self.interpreter.interpret("(square 19)")
+        self.assertEqual(status, SUCCESS)
+        self.assertIsInstance(result, Token)
+
+        if isinstance(result, Token):
+            self.assertEqual(result.literal, 361)
+
+    def test_closure(self):
+        status, result = self.interpreter.interpret(
+            "(define (make-multiplier bynum) (lambda (x) (* x bynum)))"
+        )
+        status, result = self.interpreter.interpret(
+            "(define mult4 (make-multiplier 4))"
+        )
+        status, result = self.interpreter.interpret(
+            "(define mult2 (make-multiplier 2))"
+        )
+        status, result = self.interpreter.interpret("(mult4 5)")
+
+        self.assertEqual(status, SUCCESS)
+        self.assertIsInstance(result, Token)
+
+        if isinstance(result, Token):
+            self.assertEqual(result.literal, 20)
+
+        status, result = self.interpreter.interpret("(mult2 5)")
+        self.assertEqual(status, SUCCESS)
+        self.assertIsInstance(result, Token)
+
+        if isinstance(result, Token):
+            self.assertEqual(result.literal, 10)

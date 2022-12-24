@@ -38,6 +38,7 @@ class TokenType(Enum):
     IDENT = 25
 
     BEGIN = 26
+    LAMBDA = 27
 
 
 @dataclass
@@ -83,10 +84,10 @@ class Parse:
     def get_token(self, t):
         try:
             return Token(TokenType.INT, int(t))
-        except ValueError:
+        except (TypeError, ValueError):
             try:
                 return Token(TokenType.FLOAT, float(t))
-            except ValueError:
+            except (TypeError, ValueError):
                 pass
 
         if t == "+":
@@ -133,4 +134,6 @@ class Parse:
             return Token(TokenType.BOOLEAN, t)
         elif t == "begin":
             return Token(TokenType.BEGIN, t)
+        elif t == "lambda":
+            return Token(TokenType.LAMBDA, t)
         return Token(TokenType.IDENT, t)

@@ -6,8 +6,8 @@ This project is a work in progress
 A subset of features for the
 [R5RS](https://schemers.org/Documents/Standards/R5RS)
 [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language))
-implemented in python as a learning project. The only dependency is python
-version >= 3.8
+implemented in python as a learning project. The only dependency is a recent
+python version (tested with python >= 3.7)
 
 ## Usage
 To run:

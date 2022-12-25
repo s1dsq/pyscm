@@ -1,6 +1,7 @@
 # Scheme interpreter in python
 
-This project is a work in progress
+This project is a work in progress. Many features are missing. I am putting
+things together piece by piece
 
 ## Introduction
 A subset of features for the
@@ -8,6 +9,13 @@ A subset of features for the
 [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language))
 implemented in python as a learning project. The only dependency is a recent
 python version (tested with python >= 3.7)
+
+## Architecture
+This is generic tree walking interpreter:<br>
+
+```
+Source Code ---> Parser ---> Abstract Syntax Tree ---> Evaluater ---> Result
+```
 
 ## Usage
 To run:

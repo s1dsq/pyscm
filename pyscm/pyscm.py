@@ -16,12 +16,18 @@ class Interpret:
         self.evaluator = Evaluate(self.parser, self.env)
 
     def split_expression(self, exp: str):
-        return exp.replace("(", " ( ").replace(")", " ) ").split()
+        lines = exp.replace("(", " ( ").replace(")", " ) ").split("\n")
+
+        def filter_comment(line):
+            line = line.lstrip()
+            return line and line[0] != ";"
+
+        expr_without_comments = list(filter(filter_comment, lines))
+
+        return "".join(expr_without_comments).split()
 
     def interpret(self, exp: str) -> Tuple[bool, Union[List[Any], None, str]]:
         if not exp:
-            return SUCCESS, None
-        if exp.lstrip()[0] == ";":
             return SUCCESS, None
 
         to_parse = self.split_expression(exp)
@@ -32,7 +38,6 @@ class Interpret:
             if not ret:
                 return FAILURE, f"{parsed_or_msg}"
             else:
-                # print("parsed =", parsed_or_msg)
                 evaluation = self.evaluator.evaluate(parsed_or_msg)
                 status = evaluation.status
                 result = evaluation.result

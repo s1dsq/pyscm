@@ -1,9 +1,9 @@
 import sys
-from typing import Tuple, Union
+from typing import Any, List, Tuple, Union
 
 from .env import global_env
 from .evaluate import EvalStatus, Evaluate
-from .parse import Parse, Token
+from .parse import Parse
 
 SUCCESS = True
 FAILURE = False
@@ -18,7 +18,7 @@ class Interpret:
     def split_expression(self, exp: str):
         return exp.replace("(", " ( ").replace(")", " ) ").split()
 
-    def interpret(self, exp: str) -> Tuple[bool, Union[Token, str, None]]:
+    def interpret(self, exp: str) -> Tuple[bool, Union[List[Any], None, str]]:
         if not exp:
             return SUCCESS, None
         if exp.lstrip()[0] == ";":
@@ -26,18 +26,22 @@ class Interpret:
 
         to_parse = self.split_expression(exp)
         status = SUCCESS
-        result = None
+        results = []
         while len(to_parse) > 0:
             ret, parsed_or_msg = self.parser.parse(to_parse)
             if not ret:
                 return FAILURE, f"{parsed_or_msg}"
             else:
+                # print("parsed =", parsed_or_msg)
                 evaluation = self.evaluator.evaluate(parsed_or_msg)
                 status = evaluation.status
                 result = evaluation.result
                 if status == EvalStatus.FAILURE:
                     return FAILURE, result
-        return SUCCESS, result
+                else:
+                    if result:
+                        results.append(result)
+        return SUCCESS, results
 
 
 def run_repl():
@@ -45,12 +49,16 @@ def run_repl():
         interpreter = Interpret(global_env)
         while True:
             exp = input("pyscm> ")
-            status, result = interpreter.interpret(exp)
+            status, results = interpreter.interpret(exp)
             if status == SUCCESS:
-                if result:
-                    print(result)
+                if isinstance(results, List):
+                    for result in results:
+                        if result:
+                            print(result)
+                elif results:
+                    print(results)
             else:
-                print("error:", result)
+                print("error:", results)
     except (KeyboardInterrupt, EOFError):
         sys.exit(1)
 
@@ -63,13 +71,16 @@ def interpret_from_file(file):
         interpreter = Interpret(global_env)
         f = open(file)
         contents = f.read()
-        for line in contents.split("\n"):
-            status, result = interpreter.interpret(line)
-            if status == SUCCESS:
-                if result:
-                    print(result)
-            else:
-                print("error:", result)
+        status, results = interpreter.interpret(contents)
+        if status == SUCCESS:
+            if isinstance(results, List):
+                for result in results:
+                    if result:
+                        print(result)
+            elif results:
+                print(results)
+        else:
+            print("error:", results)
     except OSError as e:
         print(e)
         sys.exit(1)

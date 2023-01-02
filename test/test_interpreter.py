@@ -64,7 +64,10 @@ class TestSchemeInterpreter(unittest.TestCase):
 
     def test_define(self):
         status, result = self.interpreter.interpret(
-            "(define x (if (< 2 4) (+ 2 (* 4 8)) (if #t 'if' 'else'))) x"
+            '''
+            (define x (if (< 2 4) (+ 2 (* 4 8)) (if #t 'if' 'else')))
+            x
+            '''
         )
         self.assertEqual(status, SUCCESS)
 
@@ -166,7 +169,10 @@ class TestSchemeInterpreter(unittest.TestCase):
 
     def test_set1(self):
         status, result = self.interpreter.interpret(
-            "(define f 10) (set! f (+ f f 6)) f"
+            '''
+            (define f 10)
+            (set! f (+ f f 6)) f
+            '''
         )
         self.assertEqual(status, SUCCESS)
 
@@ -186,7 +192,10 @@ class TestSchemeInterpreter(unittest.TestCase):
 
     def test_begin(self):
         status, result = self.interpreter.interpret(
-            "(define y 10) (begin (set! y (+ y 5)) y)"
+            '''
+            (define y 10)
+            (begin (set! y (+ y 5)) y)
+            '''
         )
         self.assertEqual(status, SUCCESS)
 
@@ -195,7 +204,11 @@ class TestSchemeInterpreter(unittest.TestCase):
 
     def test_define_with_expr(self):
         status, result = self.interpreter.interpret(
-            "(define (square n) (* n n)) (define (cube n) (* n n n)) (+ (square 13) (cube 13))"
+            '''
+            (define (square n) (* n n))
+            (define (cube n) (* n n n))
+            (+ (square 13) (cube 13))
+            '''
         )
         self.assertEqual(status, SUCCESS)
 
@@ -204,7 +217,10 @@ class TestSchemeInterpreter(unittest.TestCase):
 
     def test_lambda(self):
         status, result = self.interpreter.interpret(
-            "(define x 6) (((lambda (n) (if (> n 3) * +)) 5) 5 x)"
+            '''
+            (define x 6)
+            (((lambda (n) (if (> n 3) * +)) 5) 5 x)
+            '''
         )
         self.assertEqual(status, SUCCESS)
 
@@ -213,38 +229,32 @@ class TestSchemeInterpreter(unittest.TestCase):
 
     def test_lambda_in_define(self):
         status, result = self.interpreter.interpret(
-            "(define square (lambda (n) (* n n))) (square 12)"
+            '''
+            (define square (lambda (n) (* n n)))
+            (square 12)
+            (square 19)
+            '''
         )
         self.assertEqual(status, SUCCESS)
 
         if isinstance(result, List):
             self.assertEqual(result[0].literal, 144)
-
-        status, result = self.interpreter.interpret("(square 19)")
-        self.assertEqual(status, SUCCESS)
-
-        if isinstance(result, List):
-            self.assertEqual(result[0].literal, 361)
+            self.assertEqual(result[1].literal, 361)
 
     def test_closure(self):
         status, result = self.interpreter.interpret(
-            "(define (make-multiplier bynum) (lambda (x) (* x bynum)))"
+            '''
+            (define (make-multiplier bynum)
+                (lambda (x)
+                    (* x bynum)))
+            (define mult4 (make-multiplier 4))
+            (define mult2 (make-multiplier 2))
+            (mult4 5)
+            (mult2 5)
+            '''
         )
-        status, result = self.interpreter.interpret(
-            "(define mult4 (make-multiplier 4))"
-        )
-        status, result = self.interpreter.interpret(
-            "(define mult2 (make-multiplier 2))"
-        )
-        status, result = self.interpreter.interpret("(mult4 5)")
-
         self.assertEqual(status, SUCCESS)
 
         if isinstance(result, List):
             self.assertEqual(result[0].literal, 20)
-
-        status, result = self.interpreter.interpret("(mult2 5)")
-        self.assertEqual(status, SUCCESS)
-
-        if isinstance(result, List):
-            self.assertEqual(result[0].literal, 10)
+            self.assertEqual(result[1].literal, 10)
